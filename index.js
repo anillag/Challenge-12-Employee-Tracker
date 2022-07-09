@@ -1,16 +1,6 @@
 const inquirer = require("inquirer");
-const mysql2 = require("mysql2");
+const db = require("./server/connection");
 const cTable = require("console.table");
-
-const db = mysql2.createConnection(
-    {
-        host: "localhost",
-        user: "root",
-        password: "sqlpass",
-        database: "employees",
-    },
-    console.log("Connected to employee database")
-);
 
 const userChoice = async () => {
     const mainMenu = await inquirer.prompt({
@@ -33,11 +23,11 @@ const userChoice = async () => {
 
 const viewAll = (userSelection) => {
     if (userSelection === "View All Departments") {
-        var sql = "SELECT * FROM departments"
+        var sql = "SELECT * FROM departments";
     } else if (userSelection === "View All Roles") {
-        var sql = "SELECT * FROM roles"
+        var sql = "SELECT * FROM roles";
     } else {
-        var sql = "SELECT * FROM employees"
+        var sql = "SELECT * FROM employees";
     }
     db.query(sql, (err,rows) => {
         if (err) {
