@@ -1,8 +1,8 @@
 DROP TABLES IF EXISTS employees;
 DROP TABLES IF EXISTS roles;
-DROP TABLES IF EXISTS department;
+DROP TABLES IF EXISTS departments;
 
-CREATE TABLE department (
+CREATE TABLE departments (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     department_name VARCHAR(30) NOT NULL
 );
@@ -13,7 +13,7 @@ CREATE TABLE roles (
     role_salary DECIMAL(10,0),
     department_id INTEGER,
     FOREIGN KEY (department_id)
-    REFERENCES department(id)
+    REFERENCES departments(id)
     ON DELETE SET NULL
 );
 
