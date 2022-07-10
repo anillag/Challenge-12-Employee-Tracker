@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const db = require("./server/connection");
 const cTable = require("console.table");
+const { restoreDefaultPrompts } = require("inquirer");
 
 const userChoice = async () => {
     const mainMenu = await inquirer.prompt({
@@ -23,22 +24,47 @@ const userChoice = async () => {
 
 const viewAll = (userSelection) => {
     if (userSelection === "View All Departments") {
-        var sql = "SELECT * FROM departments";
-    } else if (userSelection === "View All Roles") {
-        var sql = "SELECT * FROM roles";
-    } else {
-        var sql = "SELECT * FROM employees";
+        var sql = "SELECT * FROM department";
     }
-    db.query(sql, (err,rows) => {
+    if (userSelection === "View All Roles") {
+        var sql = "SELECT * FROM roles";
+    }
+    if (userSelection === "View All Employees") {
+        var sql = "SELECT * FROM employee";
+        console.log("View All Employees fires here");
+    }
+    // move to switch
+    // OR use multiple IFs
+    db.query(sql, (err, rows) => {
         if (err) {
             console.error(err);
         } else {
             console.log("\n");
             console.table(rows);
-            console.log("\n" + "Type any key to continue.")
-            userChoice();
         }
-    })
+    });
+    // const abc = new Promise((resolve,reject) => {
+    //     db.query(sql, (err,rows) => {
+    //         if (err) {
+    //             console.error(err);
+    //         } else {
+    //             // let rowsOutput = new Promise((resolve, reject) => {
+    //             //     resolve(rows)
+    //             // })
+    //             resolve(rows)
+    //         }
+    //     })
+    // })
+    // abc.then(results => {
+    //     console.log("\n");
+    //     console.table(results);
+    //     console.log("results: " + results);
+    //     console.log("Rows has displayed");
+    //     // console.log("\n" + "Type any key to continue.")
+    //     userChoice();
+    //     // rowsOutput.then(displayOutput => {
+    //     // })
+    // })
 }
 
 const addDepartment = async () => {
@@ -47,14 +73,14 @@ const addDepartment = async () => {
         name: "departmentName",
         message: "What is the name of this department?"
     });
-    const sql = `INSERT INTO departments (department_name)
+    const sql = `INSERT INTO department (department_name)
     VALUES (?)`;
     const params = [departmentInfo.departmentName]
     db.query(sql, params, (err, result) => {
         if (err) {
             console.error(err)
         } else {
-            console.log (`${departmentInfo.departmentName} was added to Departments`)
+            console.log (`${departmentInfo.departmentName} was added to Department`)
         }
     })
 }
@@ -76,7 +102,7 @@ const addRole = async () => {
             name: "departmentID",
             // could be updated
             message: "What is the ID for the department this role is listed under?"
-        }
+        },
     ]);
     const sql = `INSERT INTO roles (role_title, role_salary, department_id)
     VALUES (?,?,?)`;
@@ -117,7 +143,7 @@ const addEmployee = async () => {
             message: "What is the employee ID of their manager?"
         }
     ]);
-    const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id)
+    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
     VALUES (?,?,?,?)`
     const params = [
         employeeInfo.employeeFirstName,
@@ -139,15 +165,15 @@ const updateEmployee = async () => {
         {
             type: "number",
             name: "employeeID",
-            message: "What"
+            message: "What is their employee ID?"
         },
         {
             type: "number",
             name: "newRoleID",
-            message: "What"
+            message: "What is the ID of their new role?"
         }
     ]);
-    const sql = `UPDATE employees SET role_id=? WHERE id=?`
+    const sql = `UPDATE employee SET role_id=? WHERE id=?`
     const params = [
         employeeUpdated.newRoleID,
         employeeUpdated.employeeID
@@ -176,9 +202,9 @@ const init = async () => {
             viewAll(initialChoice);
         } else if (initialChoice === "Add A Department") {
             let departmentAdded = await addDepartment();
-        } else if (initialChoice === "Add a Role") {
+        } else if (initialChoice === "Add A Role") {
             let roleAdded = await addRole();
-        } else if (initialChoice === "Add an Employee") {
+        } else if (initialChoice === "Add An Employee") {
             let employeeAdded = await addEmployee();
         } else if (initialChoice === "Update An Employee Role") {
             let employeeUpdated = await updateEmployee();
