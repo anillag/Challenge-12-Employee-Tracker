@@ -1,70 +1,78 @@
 const inquirer = require("inquirer");
 const db = require("./server/connection");
 const cTable = require("console.table");
-const { restoreDefaultPrompts } = require("inquirer");
 
-const userChoice = async () => {
-    const mainMenu = await inquirer.prompt({
+// "Main" menu
+const userSelection = async () => {
+    const userMenu = await inquirer.prompt({
         type: "list",
-        message: "What would you like to do? \n",
         name: "chooseAction",
+        message: "What would you like to do?",
         choices: [
             "View All Departments",
             "View All Roles",
             "View All Employees",
+            "View Employees For Manager ID",
             "Add A Department",
             "Add A Role",
             "Add An Employee",
             "Update An Employee Role",
+            "Update An Employees Manager",
             "Quit"
         ]
     });
-    return mainMenu.chooseAction;
+    return userMenu.chooseAction;
 };
 
-const viewAll = (userSelection) => {
-    if (userSelection === "View All Departments") {
-        var sql = "SELECT * FROM department";
+// Handles the "View All" options
+const viewAllChoices = (userChoice) => {
+    switch (userChoice) {
+        case "View All Departments":
+            var sql = "SELECT * FROM department";
+            break;
+        case "View All Roles":
+            var sql = "SELECT * FROM roles";
+            break;
+        case "View All Employees":
+            var sql = "SELECT * FROM employee";
+            break;
     }
-    if (userSelection === "View All Roles") {
-        var sql = "SELECT * FROM roles";
-    }
-    if (userSelection === "View All Employees") {
-        var sql = "SELECT * FROM employee";
-        console.log("View All Employees fires here");
-    }
+    // if (userChoice === "View All Departments") {
+    //     var sql = "SELECT * FROM department";
+    // }
+    // if (userChoice === "View All Roles") {
+    //     var sql = "SELECT * FROM roles";
+    // }
+    // if (userChoice === "View All Employees") {
+    //     var sql = "SELECT * FROM employee";
+    // }
     // move to switch
-    // OR use multiple IFs
-    db.query(sql, (err, rows) => {
+    db.query(sql, (err, tableOutput) => {
         if (err) {
             console.error(err);
         } else {
-            console.log("\n");
-            console.table(rows);
+            console.table(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.")
         }
     });
-    // const abc = new Promise((resolve,reject) => {
-    //     db.query(sql, (err,rows) => {
-    //         if (err) {
-    //             console.error(err);
-    //         } else {
-    //             // let rowsOutput = new Promise((resolve, reject) => {
-    //             //     resolve(rows)
-    //             // })
-    //             resolve(rows)
-    //         }
-    //     })
-    // })
-    // abc.then(results => {
-    //     console.log("\n");
-    //     console.table(results);
-    //     console.log("results: " + results);
-    //     console.log("Rows has displayed");
-    //     // console.log("\n" + "Type any key to continue.")
-    //     userChoice();
-    //     // rowsOutput.then(displayOutput => {
-    //     // })
-    // })
+}
+
+const viewEmployeesByManager = async () => {
+    const employeeInfo = await inquirer.prompt({
+        type: "number",
+        name: "byManagerID",
+        message: "What is the ID of the manager?"
+    });
+    const sql = `SELECT * FROM employee WHERE manager_id=?`
+    const params = [employeeInfo.byManagerID];
+    db.query(sql, params, (err, tableOutput) => {
+        if (err) {
+            console.error(err);
+        } else {
+            console.table(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.")
+        }
+    });
 }
 
 const addDepartment = async () => {
@@ -76,11 +84,11 @@ const addDepartment = async () => {
     const sql = `INSERT INTO department (department_name)
     VALUES (?)`;
     const params = [departmentInfo.departmentName]
-    db.query(sql, params, (err, result) => {
+    db.query(sql, params, (err) => {
         if (err) {
             console.error(err)
         } else {
-            console.log (`${departmentInfo.departmentName} was added to Department`)
+            console.log(`${departmentInfo.departmentName} was added to the department table`)
         }
     })
 }
@@ -102,7 +110,7 @@ const addRole = async () => {
             name: "departmentID",
             // could be updated
             message: "What is the ID for the department this role is listed under?"
-        },
+        }
     ]);
     const sql = `INSERT INTO roles (role_title, role_salary, department_id)
     VALUES (?,?,?)`;
@@ -111,11 +119,12 @@ const addRole = async () => {
         roleInfo.roleSalary,
         roleInfo.departmentID
     ];
-    db.query(sql,params,(err,result) => {
+    db.query(sql, params, (err, tableOutput) => {
         if (err) {
             console.error(err);
         } else {
-            console.log(result);
+            console.table(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.")
         }
     });
 };
@@ -151,11 +160,12 @@ const addEmployee = async () => {
         employeeInfo.employeeRoleID,
         employeeInfo.employeeManagerID
     ];
-    db.query(sql, params, (err, result) => {
+    db.query(sql, params, (err, tableOutput) => {
         if (err) {
             console.error(err);
         } else {
-            console.log(result);
+            console.table(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.")
         }
     });
 };
@@ -178,19 +188,48 @@ const updateEmployee = async () => {
         employeeUpdated.newRoleID,
         employeeUpdated.employeeID
     ];
-    db.query(sql, params, (err,result) => {
+    db.query(sql, params, (err, tableOutput) => {
         if (err) {
             console.error(err);
         } else {
-            console.log(result);
+            console.log(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.")
         }
     });
 };
 
-const init = async () => {
+const updateEmployeeManager = async () => {
+    const employeeManagerUpdated = await inquirer.prompt([
+        {
+            type: "number",
+            name: "employeeIDToUpdate",
+            message: "What is the employee ID that you wish to update?"
+        },
+        {
+            type: "number",
+            name: "newEmployeeManagerID",
+            message: "What is the ID of their new manager?"
+        }
+    ]);
+    const sql = `UPDATE employee SET manager_id=? WHERE id=?`
+    const params = [
+        employeeManagerUpdated.newEmployeeManagerID,
+        employeeManagerUpdated.employeeIDToUpdate
+    ];
+    db.query(sql, params, (err, tableOutput) => {
+        if (err) {
+            console.error(err);
+        } else {
+            console.table(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.")
+        }
+    });
+};
+
+const start = async () => {
     let exit = false;
     while (exit === false) {
-        let initialChoice = await userChoice();
+        let initialChoice = await userSelection();
         if (initialChoice === "Quit") {
             exit = true;
             return quit();
@@ -199,7 +238,9 @@ const init = async () => {
             initialChoice === "View All Roles" ||
             initialChoice === "View All Employees"
             ) {
-            viewAll(initialChoice);
+            viewAllChoices(initialChoice);
+        } else if (initialChoice === "View Employees For Manager ID") {
+            let employeesByManager = await viewEmployeesByManager();
         } else if (initialChoice === "Add A Department") {
             let departmentAdded = await addDepartment();
         } else if (initialChoice === "Add A Role") {
@@ -208,6 +249,8 @@ const init = async () => {
             let employeeAdded = await addEmployee();
         } else if (initialChoice === "Update An Employee Role") {
             let employeeUpdated = await updateEmployee();
+        } else if (initialChoice === "Update An Employees Manager") {
+            let employeeManagerUpdated = await updateEmployeeManager();
         }
     }
 };
@@ -216,4 +259,4 @@ const quit = () => {
     process.exit();
 };
 
-init();
+start();
