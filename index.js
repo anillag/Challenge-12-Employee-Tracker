@@ -37,20 +37,11 @@ const viewAllChoices = (userChoice) => {
             var sql = "SELECT * FROM employee";
             break;
     }
-    // if (userChoice === "View All Departments") {
-    //     var sql = "SELECT * FROM department";
-    // }
-    // if (userChoice === "View All Roles") {
-    //     var sql = "SELECT * FROM roles";
-    // }
-    // if (userChoice === "View All Employees") {
-    //     var sql = "SELECT * FROM employee";
-    // }
-    // move to switch
     db.query(sql, (err, tableOutput) => {
         if (err) {
             console.error(err);
         } else {
+            console.log("\n");
             console.table(tableOutput);
             console.log("Press UP ARROW or DOWN ARROW to continue.")
         }
@@ -69,8 +60,9 @@ const viewEmployeesByManager = async () => {
         if (err) {
             console.error(err);
         } else {
+            console.log("\n");
             console.table(tableOutput);
-            console.log("Press UP ARROW or DOWN ARROW to continue.")
+            console.log("Press UP ARROW or DOWN ARROW to continue.");
         }
     });
 }
@@ -86,9 +78,9 @@ const addDepartment = async () => {
     const params = [departmentInfo.departmentName]
     db.query(sql, params, (err) => {
         if (err) {
-            console.error(err)
+            console.error(err);
         } else {
-            console.log(`${departmentInfo.departmentName} was added to the department table`)
+            console.log(`${departmentInfo.departmentName} was added to the department table`);
         }
     })
 }
@@ -123,8 +115,9 @@ const addRole = async () => {
         if (err) {
             console.error(err);
         } else {
+            console.log("\n");
             console.table(tableOutput);
-            console.log("Press UP ARROW or DOWN ARROW to continue.")
+            console.log("Press UP ARROW or DOWN ARROW to continue.");
         }
     });
 };
@@ -164,8 +157,9 @@ const addEmployee = async () => {
         if (err) {
             console.error(err);
         } else {
+            console.log("\n");
             console.table(tableOutput);
-            console.log("Press UP ARROW or DOWN ARROW to continue.")
+            console.log("Press UP ARROW or DOWN ARROW to continue.");
         }
     });
 };
@@ -192,8 +186,9 @@ const updateEmployee = async () => {
         if (err) {
             console.error(err);
         } else {
-            console.log(tableOutput);
-            console.log("Press UP ARROW or DOWN ARROW to continue.")
+            console.log("\n");
+            console.table(tableOutput);
+            console.log("Press UP ARROW or DOWN ARROW to continue.");
         }
     });
 };
@@ -220,8 +215,9 @@ const updateEmployeeManager = async () => {
         if (err) {
             console.error(err);
         } else {
+            console.log("\n");
             console.table(tableOutput);
-            console.log("Press UP ARROW or DOWN ARROW to continue.")
+            console.log("Press UP ARROW or DOWN ARROW to continue.");
         }
     });
 };

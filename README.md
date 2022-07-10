@@ -1,19 +1,25 @@
 # Challenge 12 - Employee Tracker
 
-GIVEN a command-line application that accepts user input
-WHEN I start the application
-THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-WHEN I choose to view all departments
-THEN I am presented with a formatted table showing department names and department ids
-WHEN I choose to view all roles
-THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-WHEN I choose to view all employees
-THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-WHEN I choose to add a department
-THEN I am prompted to enter the name of the department and that department is added to the database
-WHEN I choose to add a role
-THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-WHEN I choose to add an employee
-THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+## Project Purpose
+
+The command line interface of an employee database that holds department, role, and employee data.
+
+## App Built With
+
+- JavaScript ES6 / ES2015
+- Node.js
+- npm
+- MySQL
+- MySQL2 (npm package)
+- Inquirer (npm package)
+- console.table (npm package)
+
+## Usage
+
+Type "npm i" to install packages and dependencies, then type "node index" to begin the app. Users are presented with a menu of choices, which can be selected using UP ARROW or DOWN ARROW keys and then choosing ENTER/RETURN. Display only options ("View All Departments", "View All Roles", and "View All Employees") will automatically return a table of information for the selected option as contained in the database. Options that require user input will be presented as such, and then the requested output will be displayed as a table, or a confirmation of the database response will be shown.
+
+https://drive.google.com/file/d/1le349C133PhDR7LJ0AYG3ejaB2uFzdj_/view
+
+## Contributors
+
+Made with ❤️ by Joe Gallina
